@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+  backend:
+    container_name: satsthis-backend-e2e
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+      - satsthis-backend-e2e-node-modules:/usr/src/app/node_modules
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+      - 9229:9229
+    command: ./docker/e2e.command.sh
+    env_file:
+      - .env
+    networks:
+      - webnet
+    depends_on:
+      - postgres
+    tty: true
+  postgres:
+    container_name: satsthis-postgres-postgres-e2e
+    image: postgres:12.2
+    networks:
+      - webnet
+    environment:
+      TZ: GMT
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE_NAME}
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    volumes:
+      - satsthis-pgdata-e2e:/var/lib/postgresql/data
+networks:
+  webnet:
+volumes:
+  satsthis-pgdata-e2e:
+  satsthis-backend-e2e-node-modules:
