@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   backend:
-    container_name: backend-e2e
+    container_name: nest-starter-backend-e2e
     build:
       context: .
       target: development
@@ -21,7 +21,7 @@ services:
       - postgres
     tty: true
   postgres:
-    container_name: postgres-e2e
+    container_name: nest-starter-postgres-e2e
     image: postgres:12.2
     networks:
       - webnet
@@ -38,5 +38,5 @@ services:
 networks:
   webnet:
 volumes:
-  pgdata-e2e:
+  nest-starter-pgdata-e2e:
   backend-e2e-node-modules:

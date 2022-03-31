@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   backend:
-    container_name: backend
+    container_name: nest-starter-backend
     build:
       context: .
       target: development
@@ -20,7 +20,7 @@ services:
     depends_on:
       - postgres
   postgres:
-    container_name: postgres
+    container_name: nest-starter-postgres
     image: postgres:12.2
     networks:
       - webnet
