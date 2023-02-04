@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { ValidationPipe } from '@nestjs/common';
 
 import { AppModule } from './app.module';
 import { AppConfig } from 'src/modules/configuration/configuration.service';
