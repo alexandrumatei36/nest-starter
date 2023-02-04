@@ -20,8 +20,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:e2e:docker": "docker-compose -f docker-compose.e2e.yml up --abort-on-container-exit --exit-code-from backend",
     "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
-    "db:migration:generate": "npm run typeorm -- migration:generate -n",
-    "db:migration:run": "npm run typeorm -- migration:run"
+    "db:migration:generate": "npm run typeorm -- migration:generate -d ormconfig.ts",
+    "db:migration:run": "npm run typeorm -- migration:run  -d ormconfig.ts"
   },
   "dependencies": {
     "@nestjs/cli": "^9.2.0",
