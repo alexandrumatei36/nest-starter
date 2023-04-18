@@ -10,6 +10,8 @@ import { DatabaseModule } from "./modules/database/database.module";
 import { TypeOrmDefaultConfigService } from "./modules/database/database.providers";
 import { HealthModule } from "./modules/health/health.module";
 import { MarketPricesModule } from "./modules/market-prices/module";
+import { ZenottaModule } from "./modules/zenotta/module";
+import { ScraperModule } from "./modules/scraper/module";
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { MarketPricesModule } from "./modules/market-prices/module";
     CacheModule.register({ isGlobal: true }),
     HealthModule,
     MarketPricesModule,
+    ZenottaModule,
+    ScraperModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,6 +1,6 @@
-import { registerAs } from '@nestjs/config';
+import { registerAs } from "@nestjs/config";
 
-export default registerAs('config', () => {
+export default registerAs("config", () => {
   return {
     database: {
       host: process.env.DB_HOST,
@@ -14,6 +14,14 @@ export default registerAs('config', () => {
     },
     freeCurrencyApi: {
       apiKey: process.env.FREE_CURRENCY_API_KEY,
+    },
+    zenotta: {
+      storageNodeUrl: process.env.ZENOTTA_STORAGE_NODE_URL,
+    },
+    scraper: {
+      blockPollingInterval: process.env.SCRAPER_BLOCK_POLLING_INTERVAL
+        ? parseFloat(process.env.SCRAPER_BLOCK_POLLING_INTERVAL)
+        : 1,
     },
   };
 });
