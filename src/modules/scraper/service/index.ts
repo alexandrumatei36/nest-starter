@@ -4,6 +4,9 @@ import { AppConfig } from "../../configuration/configuration.service";
 import { DataSource, IsNull, Not, Repository } from "typeorm";
 import { Block } from "../../zenotta/model/block.entity";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Transaction } from "src/modules/zenotta/model/transaction.entity";
+import { TxIn, TxOut, TxOutValueType } from "src/modules/zenotta/model";
+import { IAssetReceipt, IAssetToken } from "@zenotta/zenotta-js";
 
 @Injectable()
 export class ScraperService {
@@ -39,7 +42,7 @@ export class ScraperService {
     this.logger.debug(`get blocks ${range.from} - ${range.to}`);
     await this.dataSource.transaction(async (entityManager) => {
       for (const blockItem of blocks) {
-        const hash = blockItem[0];
+        const blockHash = blockItem[0];
         const block = blockItem[1].block;
 
         await entityManager
@@ -48,11 +51,81 @@ export class ScraperService {
           .into(Block)
           .values({
             num: block.header.b_num,
-            hash,
+            hash: blockHash,
             previousHash: block.header.previous_hash,
             version: block.header.version,
           })
-          .execute();
+          .execute()
+          .catch((error) => console.log(error));
+        const transactions = await Promise.all(
+          block.transactions.map((txHash) => this.zenottaService.getTransactionByHash(txHash)),
+        );
+        for (const transaction of transactions) {
+          const index = transactions.indexOf(transaction);
+          const txHash = block.transactions[index];
+          const tx = await entityManager
+            .createQueryBuilder()
+            .insert()
+            .into(Transaction)
+            .values({
+              blockHash,
+              hash: txHash,
+              version: transaction.version,
+            })
+            .execute();
+
+          for (const input of transaction.inputs) {
+            console.log(input);
+            await entityManager
+              .createQueryBuilder()
+              .insert()
+              .into(TxIn)
+              .values({
+                txId: tx.identifiers[0].id,
+                txHash,
+                previousOutTxHash: input.previous_out?.t_hash,
+                previousOutTxN: input.previous_out?.n,
+                script_signature: input.script_signature,
+              })
+              .execute();
+          }
+          for (const output of transaction.outputs) {
+            console.log(output);
+            if ((output.value as any).Token) {
+              const typedValue = output.value as IAssetToken;
+              await entityManager
+                .createQueryBuilder()
+                .insert()
+                .into(TxOut)
+                .values({
+                  txId: tx.identifiers[0].id,
+                  txHash,
+                  valueType: TxOutValueType.Token,
+                  amount: typedValue.Token.toString(),
+                  locktime: output.locktime,
+                  drsBlockHash: output.drs_block_hash,
+                  scriptPublicKey: output.script_public_key,
+                })
+                .execute();
+            } else if ((output.value as any).Receipt) {
+              const typedValue = output.value as IAssetReceipt;
+              await entityManager
+                .createQueryBuilder()
+                .insert()
+                .into(TxOut)
+                .values({
+                  txId: tx.identifiers[0].id,
+                  txHash,
+                  valueType: TxOutValueType.Receipt,
+                  amount: typedValue.Receipt.amount.toString(),
+                  locktime: output.locktime,
+                  drsBlockHash: output.drs_block_hash,
+                  scriptPublicKey: output.script_public_key,
+                })
+                .execute();
+            }
+          }
+        }
       }
     });
     this.logger.debug(`get blocks ${range.from} - ${range.to}`);

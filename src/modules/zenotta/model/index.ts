@@ -15,3 +15,8 @@ export interface IBlockHeader {
   // TODO: Type
   txs_merkle_root_and_hash: any;
 }
+
+export * from "./block.entity";
+export * from "./transaction.entity";
+export * from "./tx-in.entity";
+export * from "./tx-out.entity";

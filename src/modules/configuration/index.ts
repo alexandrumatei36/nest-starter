@@ -21,7 +21,7 @@ export default registerAs("config", () => {
     scraper: {
       blockPollingInterval: process.env.SCRAPER_BLOCK_POLLING_INTERVAL
         ? parseFloat(process.env.SCRAPER_BLOCK_POLLING_INTERVAL)
-        : 1,
+        : 60,
     },
   };
 });

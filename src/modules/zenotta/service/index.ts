@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { AppConfig } from "../../configuration/configuration.service";
 import { v4 as uuidV4 } from "uuid";
 import { IBlock } from "../model";
+import { ITransaction } from "@zenotta/zenotta-js";
 
 @Injectable()
 export class ZenottaService {
@@ -32,6 +33,26 @@ export class ZenottaService {
       },
     });
     const data: [string, Record<"block", IBlock>][] = response.data.content;
+    return data;
+  }
+
+  public async getTransactionByHash(hash: string) {
+    const requestId = uuidV4().replace(/-/g, "");
+    const url = `${this.appConfig.values.zenotta.storageNodeUrl}/blockchain_entry`;
+    const genesisTxRegex = /0{5}[0-9]/;
+    const isBlock = hash[0] !== "g" && !hash.match(genesisTxRegex);
+
+    if (isBlock) {
+      throw new Error("invalid hash");
+    }
+
+    const response = await this.httpService.axiosRef.post(url, `"${hash}"`, {
+      headers: {
+        "Content-Type": "application/json",
+        "x-request-id": requestId,
+      },
+    });
+    const data: ITransaction = response.data.content.Transaction;
     return data;
   }
 }

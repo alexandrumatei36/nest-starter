@@ -1,10 +1,10 @@
 import { TypeOrmOptionsFactory, TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { Injectable } from "@nestjs/common";
 import { AppConfig } from "../configuration/configuration.service";
-import { Block } from "../zenotta/model/block.entity";
+import { Block, Transaction, TxIn, TxOut } from "../zenotta/model";
 
 // TODO: Add db entities here
-const entities = [Block];
+const entities = [Block, Transaction, TxIn, TxOut];
 
 @Injectable()
 export class TypeOrmDefaultConfigService implements TypeOrmOptionsFactory {
