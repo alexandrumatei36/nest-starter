@@ -1,10 +1,10 @@
-import { NestFactory } from '@nestjs/core';
-import helmet from 'helmet';
-import { NestExpressApplication } from '@nestjs/platform-express';
+import { NestFactory } from "@nestjs/core";
+import helmet from "helmet";
+import { NestExpressApplication } from "@nestjs/platform-express";
 
-import { AppModule } from './app.module';
-import { AppConfig } from 'src/modules/configuration/configuration.service';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AppModule } from "./app.module";
+import { AppConfig } from "src/modules/configuration/configuration.service";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { ValidationPipe } from "./validation.pipe";
 
 async function bootstrap() {
@@ -17,13 +17,12 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   const options = new DocumentBuilder()
-    .setTitle('Boilerplate API')
-    .setDescription('Boilerplate API description')
-    .setVersion('1.0')
-    .addTag('health')
+    .setTitle("Zenotta Scraper API")
+    .setVersion("1.0")
+    .addTag("health")
     .build();
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('docs', app, document);
+  SwaggerModule.setup("swagger", app, document);
 
   await app.listen(port);
 }
