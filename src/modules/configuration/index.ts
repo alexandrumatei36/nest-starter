@@ -12,5 +12,8 @@ export default registerAs('config', () => {
     app: {
       port: parseInt(process.env.APP_PORT, 10),
     },
+    freeCurrencyApi: {
+      apiKey: process.env.FREE_CURRENCY_API_KEY,
+    },
   };
 });
