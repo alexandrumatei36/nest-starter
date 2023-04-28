@@ -20,3 +20,4 @@ export * from "./block.entity";
 export * from "./transaction.entity";
 export * from "./tx-in.entity";
 export * from "./tx-out.entity";
+export * from "./tx-in-expanded.entity";

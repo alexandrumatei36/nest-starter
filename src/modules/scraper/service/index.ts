@@ -5,7 +5,7 @@ import { DataSource, IsNull, Not, Repository } from "typeorm";
 import { Block } from "../../zenotta/model/block.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Transaction } from "src/modules/zenotta/model/transaction.entity";
-import { TxIn, TxOut, TxOutValueType } from "src/modules/zenotta/model";
+import { TxIn, TxInExpanded, TxOut, TxOutValueType } from "src/modules/zenotta/model";
 import { IAssetReceipt, IAssetToken } from "@zenotta/zenotta-js";
 
 @Injectable()
@@ -73,9 +73,8 @@ export class ScraperService {
               version: transaction.version,
             })
             .execute();
-
+          console.log(txHash);
           for (const input of transaction.inputs) {
-            console.log(input);
             await entityManager
               .createQueryBuilder()
               .insert()
@@ -88,9 +87,36 @@ export class ScraperService {
                 script_signature: input.script_signature,
               })
               .execute();
+
+            // get the UTXO of the input
+            if (input.previous_out?.t_hash) {
+              console.log(input.previous_out.t_hash);
+              console.log(input.previous_out.n);
+              const outs = await entityManager
+                .createQueryBuilder(TxOut, "out")
+                .select()
+                .where("out.txHash = :txHash", { txHash: input.previous_out.t_hash })
+                .getMany();
+              console.log(outs);
+              if (outs.length !== 0) {
+                const out = outs[input.previous_out.n];
+                await entityManager
+                  .createQueryBuilder()
+                  .insert()
+                  .into(TxInExpanded)
+                  .values({
+                    txId: tx.identifiers[0].id,
+                    txHash,
+                    previousOutTxHash: input.previous_out?.t_hash,
+                    previousOutTxN: input.previous_out?.n,
+                    script_signature: input.script_signature,
+                    outScriptPublicKey: out.scriptPublicKey,
+                  })
+                  .execute();
+              }
+            }
           }
           for (const output of transaction.outputs) {
-            console.log(output);
             if ((output.value as any).Token) {
               const typedValue = output.value as IAssetToken;
               await entityManager
