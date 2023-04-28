@@ -74,7 +74,7 @@ export class ScraperService {
               version: transaction.version,
             })
             .execute();
-          console.log(txHash);
+
           for (const input of transaction.inputs) {
             await entityManager
               .createQueryBuilder()
@@ -91,14 +91,12 @@ export class ScraperService {
 
             // get the UTXO of the input
             if (input.previous_out?.t_hash) {
-              console.log(input.previous_out.t_hash);
-              console.log(input.previous_out.n);
               const outs = await entityManager
                 .createQueryBuilder(TxOut, "out")
                 .select()
                 .where("out.txHash = :txHash", { txHash: input.previous_out.t_hash })
                 .getMany();
-              console.log(outs);
+
               if (outs.length !== 0) {
                 const out = outs[input.previous_out.n];
                 await entityManager
