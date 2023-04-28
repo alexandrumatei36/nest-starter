@@ -5,12 +5,19 @@ import { AppConfigModule } from "../configuration/configuration.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Block } from "../zenotta/model/block.entity";
 import { Transaction } from "../zenotta/model/transaction.entity";
+import { ScraperController } from "./entry-point/controller";
+import { ScraperApiService } from "./service/api-service";
+import { TxInExpanded, TxOut } from "../zenotta/model";
 
 @Module({
-  controllers: [],
+  controllers: [ScraperController],
   exports: [],
-  imports: [ZenottaModule, AppConfigModule, TypeOrmModule.forFeature([Block, Transaction])],
-  providers: [ScraperService],
+  imports: [
+    ZenottaModule,
+    AppConfigModule,
+    TypeOrmModule.forFeature([Block, Transaction, TxInExpanded, TxOut]),
+  ],
+  providers: [ScraperService, ScraperApiService],
 })
 export class ScraperModule {
   constructor() {}

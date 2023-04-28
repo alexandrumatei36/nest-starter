@@ -1,12 +1,13 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { IAssetReceipt, IAssetToken } from "@zenotta/zenotta-js";
+import { InjectRepository } from "@nestjs/typeorm";
+
 import { ZenottaService } from "../../zenotta/service";
 import { AppConfig } from "../../configuration/configuration.service";
 import { DataSource, IsNull, Not, Repository } from "typeorm";
 import { Block } from "../../zenotta/model/block.entity";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Transaction } from "src/modules/zenotta/model/transaction.entity";
-import { TxIn, TxInExpanded, TxOut, TxOutValueType } from "src/modules/zenotta/model";
-import { IAssetReceipt, IAssetToken } from "@zenotta/zenotta-js";
+import { Transaction } from "../../zenotta/model/transaction.entity";
+import { TxIn, TxInExpanded, TxOut, TxOutValueType } from "../../zenotta/model";
 
 @Injectable()
 export class ScraperService {
